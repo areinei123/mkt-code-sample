@@ -6,7 +6,7 @@ Aceable is getting into the flying robot pilot licensing market. As a marketing 
 
 For this sample, we want you to:
 
-*   Create a simple Vue app
+*   Create a simple Vue app. We've provided scaffolding in index.html but you can build it from scratch if you prefer.
 *   Make a GET request to the products API endpoint at https://mkt-endpoint.now.sh/products
 *   Sort the products in the response by lowest price to highest.
 *   Iterate through each product and present the title, price **in US dollars**, and description of each.
