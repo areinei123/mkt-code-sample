@@ -17,4 +17,6 @@ To take this code sample, we need you to:
 
 *   Download this repo, **do not fork it**.
 *   Complete the exercise locally.
-*   Zip up your resulting code and attach it in a reply to geni@aceable.com
+*   Take the resulting code and **create your own GitHub repo**. Send a link to the repo to geni@aceable.com. If there are special instructions for your app, please include them in a README.
+
+## Suggested Completiton Time: 1 Hour
