@@ -9,9 +9,49 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
     </head>
     <body>
-        <div id="app"></div>
+        <div id="app">
+            <div v-for="product in products">
+                <span>{{product.title}}</span>
+                <div>{{product.description}}</div>
+                <div>${{product.price}}</div>
+            </div>
+        </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+        <script>
+            var app = new Vue({
+              el: '#app',
+              data: {
+                products: []
+              },
+              mounted() {
+                axios({
+                  method: "GET",
+                  "url": "https://mkt-endpoint.now.sh/products"
+                }).then(result => {
+                  this.products = result.data.sort(function(a,b){return a.price - b.price});
+                  console.log(result.data)
+                }, error => {
+                  console.error(error);
+                });
+              }
+            })
+
+            Vue.component('Title', {
+              template: '<div>{{name}}</div>',
+              props: ['name']
+            })
+
+            Vue.component('Description', {
+              template: '<div>{{description}}</div>',
+              props: ['description']
+            })
+
+            Vue.component('Price', {
+              template: '<div>${{price}}</div>',
+              props: ['price']
+            })
+        </script>
     </body>
 </html>

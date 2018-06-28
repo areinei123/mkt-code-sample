@@ -19,4 +19,4 @@ To take this code sample, we need you to:
 *   Complete the exercise locally.
 *   Take the resulting code and **create your own GitHub repo**. Send a link to the repo to geni@aceable.com. If there are special instructions for your app, please include them in a README.
 
-## Suggested Completiton Time: 1 Hour
+## Suggested Completion Time: 1 Hour
