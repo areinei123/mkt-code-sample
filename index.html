@@ -74,13 +74,9 @@
     <body>
         <div id="app">
             <product-header></product-header>
-            <div class="product-container" v-if="doneLoading" v-for="product in products">
-                <div class="product">
-                    <product-title v-bind:name="product.title"></product-title>
-                    <product-price v-bind:price="product.price"></product-price>
-                    <product-description v-bind:description="product.description"></product-description>
-                </div>
-            </div>
+            <product-options @on-sort-order="sortOrder"></product-options>
+            <product-container  v-if="doneLoading" v-bind:product="product" v-for="product in products">
+            </product-container>
             <div v-else-if="!doneLoading">
                 <loading-spinner></loading-spinner>
             </div>
@@ -88,62 +84,120 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+
         <script>
-            var app = new Vue({
-              el: '#app',
-              data: {
-                products: [],
-                doneLoading: false
+          var app = new Vue({
+            el: '#app',
+            data: {
+              products: [],
+              doneLoading: false,
+              sort: {}
+            },
+            mounted() {
+              axios({
+                method: "GET",
+                "url": "https://mkt-endpoint.now.sh/products"
+              }).then(result => {
+                this.products = result.data.sort(function(a,b){return a.price - b.price});
+                this.doneLoading = true;
+                console.log(result.data);
+              }, error => {
+                console.error(error);
+              });
+            },
+            methods: {
+              sortOrder: function(value){
+                console.log(value);
+                this.sort = value;
+                switch(value){
+                  case 'priceAsc':
+                    this.products = this.dynamicSort('price', 'asc', this.products);
+                    break;
+                  case 'priceDesc':
+                    this.products = this.dynamicSort('price', 'desc', this.products);
+                    break;
+                }
               },
-              mounted() {
-                axios({
-                  method: "GET",
-                  "url": "https://mkt-endpoint.now.sh/products"
-                }).then(result => {
-                  this.products = result.data.sort(function(a,b){return a.price - b.price});
-                  this.doneLoading = true
-                  console.log(result.data)
-                }, error => {
-                  console.error(error);
-                });
+              dynamicSort: function(type, direction, data){
+                return data.sort(function(a, b){
+                    return direction === 'desc'
+                        ? a[type] - b[type]
+                        : b[type] - a[type]
+                })
+
+                // if(a.firstname < b.firstname) return -1;
+                // if(a.firstname > b.firstname) return 1;
+                // return 0;
               }
-            })
+            }
+          })
 
-            Vue.component('product-title', {
-              template: '<div class="name">{{name}}</div>',
-              props: {
-                name: 'String',
-                required: true
-              },
-            });
+          Vue.component('product-title', {
+            template: '<div class="name">{{name}}</div>',
+            props: {
+              name: 'String',
+              required: true
+            },
+          });
 
-            Vue.component('product-description', {
-              template: '<div class="description">{{description}}</div>',
-              props: {
-                description: 'String',
-                required: true
+          Vue.component('product-description', {
+            template: '<div class="description">{{description}}</div>',
+            props: {
+              description: 'String',
+              required: true
+            }
+          });
+
+          Vue.component('product-price', {
+            template: '<div class="price">USD ${{price}}</div>',
+            props: {
+              price: 'String',
+              required: true
+            }
+          });
+
+          Vue.component('loading-spinner', {
+            template: '<div class="huge-loading-pane"><div class="loading"></div></div>'
+          })
+
+          Vue.component('product-container', {
+            props: {
+              product: 'Object',
+              required: true
+            },
+            template: `
+                <div class="product-container">
+                    <div class="product">
+                        <product-title v-bind:name="product.title"></product-title>
+                        <product-description v-bind:description="product.description"></product-description>
+                        <product-price v-bind:price="product.price"></product-price>
+                    </div>
+                </div>
+                `
+          })
+
+          Vue.component('product-options', {
+            template:`
+                <div style="margin-top: 8px;margin-left:21%;">
+                    <span>Sort By: </span>
+                    <button value='priceAsc' v-on:click="onSortOrder($event)">Expensive</button>
+                    <button value='priceDesc' v-on:click="onSortOrder($event)">Cheap</button>
+                </div>
+                `,
+            methods: {
+              onSortOrder: function(event){
+                this.$emit('on-sort-order', event.target.value);
               }
-            });
+            }
+          })
 
-            Vue.component('product-price', {
-              template: '<div class="price">USD ${{price}}</div>',
-              props: {
-                price: 'String',
-                required: true
-              }
-            });
-
-            Vue.component('loading-spinner', {
-              template: '<div class="huge-loading-pane"><div class="loading"></div></div>'
-            })
-
-            Vue.component('product-container', {
-              template: '<div class="product-container"></div>'
-            })
-
-            Vue.component('product-header', {
-              template: '<div class="page-header">Light your Pilot Light Today!</div>'
-            })
+          Vue.component('product-header', {
+            template: `
+                <div class="page-header">
+                    <span>Light your Pilot Light Today!</span>
+                </div>
+                `
+          })
         </script>
     </body>
 </html>
