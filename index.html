@@ -11,9 +11,9 @@
     <body>
         <div id="app">
             <div v-for="product in products">
-                <span>{{product.title}}</span>
-                <div>{{product.description}}</div>
-                <div>${{product.price}}</div>
+                <product-title v-bind:name="product.title"></product-title>
+                <product-description v-bind:description="product.description"></product-description>
+                <product-price v-bind:price="product.price"></product-price>
             </div>
         </div>
 
@@ -38,17 +38,17 @@
               }
             })
 
-            Vue.component('Title', {
+            Vue.component('product-title', {
               template: '<div>{{name}}</div>',
               props: ['name']
             })
 
-            Vue.component('Description', {
+            Vue.component('product-description', {
               template: '<div>{{description}}</div>',
               props: ['description']
             })
 
-            Vue.component('Price', {
+            Vue.component('product-price', {
               template: '<div>${{price}}</div>',
               props: ['price']
             })
