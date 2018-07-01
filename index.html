@@ -7,13 +7,82 @@
         <title>Aceable Piloting</title>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+        <style>
+            .loading {
+                border: 16px solid @primary-color; /* Light gray */
+                border-top: 16px solid @flaggedGray; /* dark gray */
+                border-radius: 50%;
+                width: 120px;
+                height: 120px;
+                animation: spin 1.2s linear infinite;
+                font-size: 100px;
+                margin-top: -50px;
+            }
+
+            .huge-loading-pane {
+                top: 0; bottom: 0; left: 0; right: 0;
+                position: fixed;
+                background-color: rgba(116, 116, 116, 0.4);
+                z-index: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+            }
+
+            .product-container{
+                display:flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .product{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                max-width: 600px;
+                border: 3px solid aliceblue;
+                flex-direction: row;
+                margin: 10px;
+                box-shadow: 3px 1px 6px aliceblue;
+            }
+
+            .name{
+                font-size: 16px;
+                padding: 15px;
+            }
+
+            .price{
+                font-weight: bold;
+                padding: 15px;
+            }
+
+            .description{
+                font-style: italic;
+                padding: 15px;
+            }
+
+            .page-header{
+                font-size: 24px;
+                margin: auto;
+                text-align: center;
+                padding: 5px;
+                border-bottom: 3px solid aliceblue;
+            }
+        </style>
     </head>
     <body>
         <div id="app">
-            <div v-for="product in products">
-                <product-title v-bind:name="product.title"></product-title>
-                <product-description v-bind:description="product.description"></product-description>
-                <product-price v-bind:price="product.price"></product-price>
+            <product-header></product-header>
+            <div class="product-container" v-if="doneLoading" v-for="product in products">
+                <div class="product">
+                    <product-title v-bind:name="product.title"></product-title>
+                    <product-price v-bind:price="product.price"></product-price>
+                    <product-description v-bind:description="product.description"></product-description>
+                </div>
+            </div>
+            <div v-else-if="!doneLoading">
+                <loading-spinner></loading-spinner>
             </div>
         </div>
 
@@ -23,7 +92,8 @@
             var app = new Vue({
               el: '#app',
               data: {
-                products: []
+                products: [],
+                doneLoading: false
               },
               mounted() {
                 axios({
@@ -31,6 +101,7 @@
                   "url": "https://mkt-endpoint.now.sh/products"
                 }).then(result => {
                   this.products = result.data.sort(function(a,b){return a.price - b.price});
+                  this.doneLoading = true
                   console.log(result.data)
                 }, error => {
                   console.error(error);
@@ -39,18 +110,39 @@
             })
 
             Vue.component('product-title', {
-              template: '<div>{{name}}</div>',
-              props: ['name']
-            })
+              template: '<div class="name">{{name}}</div>',
+              props: {
+                name: 'String',
+                required: true
+              },
+            });
 
             Vue.component('product-description', {
-              template: '<div>{{description}}</div>',
-              props: ['description']
-            })
+              template: '<div class="description">{{description}}</div>',
+              props: {
+                description: 'String',
+                required: true
+              }
+            });
 
             Vue.component('product-price', {
-              template: '<div>${{price}}</div>',
-              props: ['price']
+              template: '<div class="price">${{price}}</div>',
+              props: {
+                price: 'String',
+                required: true
+              }
+            });
+
+            Vue.component('loading-spinner', {
+              template: '<div class="huge-loading-pane"><div class="loading"></div></div>'
+            })
+
+            Vue.component('product-container', {
+              template: '<div class="product-container"></div>'
+            })
+
+            Vue.component('product-header', {
+              template: '<div class="page-header">Light your Pilot Light Today!</div>'
             })
         </script>
     </body>
